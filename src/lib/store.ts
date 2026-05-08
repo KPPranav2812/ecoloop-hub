@@ -62,10 +62,14 @@ function subscribe(cb: () => void) {
 }
 
 export function useStore<T>(selector: (s: AppState) => T): T {
-  const cache = useRef<{ state: AppState; result: T } | null>(null);
+  const cache = useRef<{ state: AppState; selector: (s: AppState) => T; result: T } | null>(null);
   const getSnapshot = useCallback(() => {
-    if (!cache.current || cache.current.state !== state) {
-      cache.current = { state, result: selector(state) };
+    if (
+      !cache.current ||
+      cache.current.state !== state ||
+      cache.current.selector !== selector
+    ) {
+      cache.current = { state, selector, result: selector(state) };
     }
     return cache.current.result;
   }, [selector]);
