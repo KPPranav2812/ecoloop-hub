@@ -9,8 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as FarmerRouteImport } from './routes/farmer'
+import { Route as ContributorRouteImport } from './routes/contributor'
+import { Route as CompostRouteImport } from './routes/compost'
+import { Route as AgentRouteImport } from './routes/agent'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const FarmerRoute = FarmerRouteImport.update({
+  id: '/farmer',
+  path: '/farmer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContributorRoute = ContributorRouteImport.update({
+  id: '/contributor',
+  path: '/contributor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompostRoute = CompostRouteImport.update({
+  id: '/compost',
+  path: '/compost',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentRoute = AgentRouteImport.update({
+  id: '/agent',
+  path: '/agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +49,90 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/agent': typeof AgentRoute
+  '/compost': typeof CompostRoute
+  '/contributor': typeof ContributorRoute
+  '/farmer': typeof FarmerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/agent': typeof AgentRoute
+  '/compost': typeof CompostRoute
+  '/contributor': typeof ContributorRoute
+  '/farmer': typeof FarmerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/agent': typeof AgentRoute
+  '/compost': typeof CompostRoute
+  '/contributor': typeof ContributorRoute
+  '/farmer': typeof FarmerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/admin' | '/agent' | '/compost' | '/contributor' | '/farmer'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/admin' | '/agent' | '/compost' | '/contributor' | '/farmer'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/agent'
+    | '/compost'
+    | '/contributor'
+    | '/farmer'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  AgentRoute: typeof AgentRoute
+  CompostRoute: typeof CompostRoute
+  ContributorRoute: typeof ContributorRoute
+  FarmerRoute: typeof FarmerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/farmer': {
+      id: '/farmer'
+      path: '/farmer'
+      fullPath: '/farmer'
+      preLoaderRoute: typeof FarmerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contributor': {
+      id: '/contributor'
+      path: '/contributor'
+      fullPath: '/contributor'
+      preLoaderRoute: typeof ContributorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compost': {
+      id: '/compost'
+      path: '/compost'
+      fullPath: '/compost'
+      preLoaderRoute: typeof CompostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent': {
+      id: '/agent'
+      path: '/agent'
+      fullPath: '/agent'
+      preLoaderRoute: typeof AgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,7 +145,22 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  AgentRoute: AgentRoute,
+  CompostRoute: CompostRoute,
+  ContributorRoute: ContributorRoute,
+  FarmerRoute: FarmerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
