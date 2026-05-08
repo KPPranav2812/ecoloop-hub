@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, useRef, useCallback } from "react";
 import type {
   AppState,
   User,
@@ -62,11 +62,19 @@ function subscribe(cb: () => void) {
 }
 
 export function useStore<T>(selector: (s: AppState) => T): T {
-  return useSyncExternalStore(
-    subscribe,
-    () => selector(state),
-    () => selector(initial),
-  );
+  const cache = useRef<{ state: AppState; selector: (s: AppState) => T; result: T } | null>(null);
+  const getSnapshot = useCallback(() => {
+    if (
+      !cache.current ||
+      cache.current.state !== state ||
+      cache.current.selector !== selector
+    ) {
+      cache.current = { state, selector, result: selector(state) };
+    }
+    return cache.current.result;
+  }, [selector]);
+  const getServerSnapshot = useCallback(() => selector(initial), [selector]);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 // ---------- Helpers ----------
